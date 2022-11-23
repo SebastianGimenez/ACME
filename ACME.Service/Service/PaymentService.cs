@@ -12,22 +12,28 @@ namespace ACME.Service.Service
             _paymentConfiguration = paymentConfiguration;
         }
 
-        public string GetPayment(string line, string name)
+        public string GetPaymentByLog(Stream stream, string name)
         {
-            //filter file by name
-            //starts with
+            int amount = 0;
+            using (StreamReader sr = new StreamReader(stream))
+            {
+                while (sr.Peek() >= 0)
+                {
+                    var line = sr.ReadLine();
+                    if (!string.IsNullOrEmpty(line) && line.StartsWith(name))
+                        amount += GetAmount(line.Split("=")[1]);
+                }
+            }
 
-            line = line.Split("=")[1];
-            var valor = GetAmount(line);
-            return $"The amount to pay {name} is: {valor}";
+            return $"The amount to pay {name} is: {amount} USD";
         }
 
         private int GetAmount(string line)
         {
             var workingDays = line.Split(",");
+            var totalAmount = 0;
             TimeOnly timeFrom;
             TimeOnly timeTo;
-            var totalAmount = 0;
             foreach (var workingDay in workingDays)
             {
                 if (!Enum.TryParse(typeof(DaysEnum), workingDay[..2], out var day))
@@ -38,7 +44,7 @@ namespace ACME.Service.Service
                 timeFrom = TimeOnly.Parse(times[0][2..]);
                 timeTo = TimeOnly.Parse(times[1]);
                 var config = GetDaysAmountPayments((DaysEnum)day);
-                totalAmount += CalculateAmountByDay(config, timeFrom, timeTo);
+                totalAmount += CalculateAmountByRange(config, timeFrom, timeTo);
             }
 
             return totalAmount;
@@ -51,11 +57,11 @@ namespace ACME.Service.Service
                 .First(x => (DaysEnum)day >= x.DayFrom && (DaysEnum)day <= x.DayTo);
         }
 
-        private int CalculateAmountByDay(DaysAmountPayments dayAmountPayment, TimeOnly timeFrom, TimeOnly timeTo)
+        private int CalculateAmountByRange(DaysAmountPayments dayAmountPayment, TimeOnly timeFrom, TimeOnly timeTo)
         {
             var amount = 0;
-            
-            foreach(var range in dayAmountPayment.Ranges) 
+
+            foreach (var range in dayAmountPayment.Ranges)
             {
                 if (timeFrom >= range.From && timeFrom <= range.To)
                 {
@@ -63,19 +69,19 @@ namespace ACME.Service.Service
                         amount += (int)(range.To - timeFrom).TotalHours * range.Amount;
 
                     if (timeTo <= range.To)
-                    { 
+                    {
                         amount += (int)(timeTo - timeFrom).TotalHours * range.Amount;
                         break;
                     }
                 }
 
                 if (timeFrom < range.From && timeTo > range.From)
-                { 
-                    if(timeTo > range.To)
+                {
+                    if (timeTo > range.To)
                         amount += (int)(range.To - range.From).TotalHours * range.Amount;
 
                     if (timeTo >= range.To)
-                    { 
+                    {
                         amount += (int)(range.To - range.From).TotalHours * range.Amount;
                         break;
                     }

@@ -8,8 +8,6 @@ namespace ACME.Service.Domain
         
         public DaysEnum DayTo { get; set; }
 
-        public string Currency { get; set; }
-
         public ICollection<TimeRangeAmount> Ranges { get; set; }
     }
 }

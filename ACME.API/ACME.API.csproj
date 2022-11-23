@@ -12,6 +12,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\ACME.Crosscutting\ACME.Crosscutting.csproj" />
     <ProjectReference Include="..\ACME.Service\ACME.Service.csproj" />
   </ItemGroup>
 

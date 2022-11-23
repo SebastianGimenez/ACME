@@ -2,6 +2,6 @@
 {
     public interface IPaymentService
     {
-        string GetPayment(string line, string name);
+        string GetPaymentByLog(Stream stream, string name);
     }
 }

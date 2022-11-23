@@ -1,4 +1,5 @@
-﻿using ACME.Service.Service;
+﻿using ACME.API.Dtos;
+using ACME.Service.Service;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ACME.API.Controllers
@@ -7,7 +8,6 @@ namespace ACME.API.Controllers
     [Route("[controller]")]
     public class PaymentController : ControllerBase
     {
-        public string Data = "ASTRID=MO10:00-12:00,TH12:00-14:00,SU20:00-21:00\r\n\r\n";
         private readonly IPaymentService _paymentService;
 
         public PaymentController(IPaymentService paymentService)
@@ -15,10 +15,10 @@ namespace ACME.API.Controllers
             _paymentService = paymentService;
         }
 
-        [HttpGet]
-        public void Get()
+        [HttpPost()]
+        public ActionResult<string> CalculateAmount([FromForm] AmountPaymentCalcDto dto)
         {
-            _paymentService.GetPayment(Data, "RENE");
+            return Ok(_paymentService.GetPaymentByLog(dto.File.OpenReadStream(), dto.Name));
         }
     }
 }
