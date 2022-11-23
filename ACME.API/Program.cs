@@ -1,4 +1,5 @@
 using ACME.Service.Domain;
+using ACME.Service.Service;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -12,6 +13,8 @@ builder.Services.AddSwaggerGen();
 var daysAmount = new PaymentConfiguration();
 builder.Configuration.Bind(nameof(PaymentConfiguration), daysAmount);
 builder.Services.AddSingleton(daysAmount);
+
+builder.Services.AddScoped<IPaymentService, PaymentService>();
 
 var app = builder.Build();
 
