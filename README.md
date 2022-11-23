@@ -1,0 +1,8 @@
+- Solution is an API with swagger for running without a frontend. It is thinked as it for a future integration.
+- AppSettings contains Time Ranges configurations. This information should be in another place as a DataBase.
+- Reading stream was done line by line, but in case files are too long a batch parallel process will be necessary.
+- Amount Calculation should work with mixed intervals (when range starts with one interval and end into another).
+- Custom exceptions must be done with logs for different errors, mostly related with file format.
+- UnitTesting should be done also for fail scenarios and for controller's input validation.
+- Security should be add to the API, maybe with BASIC AUTH.
+- Some service methods could be thinked as responsability of another class.
